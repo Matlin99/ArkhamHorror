@@ -37,6 +37,8 @@ const deckInvestigator = ref<string | null>(null)
 const investigator = computed(() => {
   return Object.values(props.game.investigators).find((i) => {
     return i.playerId === props.playerId
+  }) ?? Object.values(props.game.killedInvestigators).find((i) => {
+    return i.playerId === props.playerId
   })
 })
 const investigatorId = computed(() => !solo && deckInvestigator.value ? `c${deckInvestigator.value}` : investigator.value?.id)

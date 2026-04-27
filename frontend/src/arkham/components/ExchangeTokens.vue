@@ -27,6 +27,10 @@ const amount2 = computed(() => props.investigator2Amount + amount.value)
 const portraitLabelImage = (investigatorId: string) => {
   const player = props.game.investigators[investigatorId]
 
+  if (!player) {
+    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
+  }
+
   if (player.form.tag == "YithianForm") {
     return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
   }
