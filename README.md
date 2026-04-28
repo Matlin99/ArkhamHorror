@@ -1,5 +1,7 @@
 # Arkham Horror LCG
 
+> [中文說明 / 中文README](./README.zh.md) — 包含 bug 修正說明、Windows 部署教學、在地化設定
+
 ![Screenshot](./docs/img/screenshot.png)
 
 The goal of this project is to implement a web version of Arkham Horror with as
