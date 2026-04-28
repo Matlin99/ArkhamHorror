@@ -1,0 +1,25 @@
+# Docker Compose override for Windows x86_64 deployment
+#
+# This file lets you run the upstream pre-built image while mounting a
+# locally-built frontend that includes your own changes (bug fixes, etc.).
+# It avoids compiling the Haskell backend on Windows, which takes hours.
+#
+# Prerequisites:
+#   1. Docker Desktop (WSL2 backend recommended)
+#   2. Card images in frontend/public/img/arkham/
+#   3. frontend/dist/ built (see WINDOWS_DEPLOY.md)
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.windows.yml up
+#
+
+services:
+  web:
+    # Use the upstream multi-arch image (amd64 on Windows x86_64)
+    image: halogenandtoast/arkham-horror:latest
+    # Prevent Docker from trying to rebuild the Haskell backend
+    build: null
+    volumes:
+      # Replace the baked-in frontend with your locally-built dist
+      # (must contain img/ sub-folder if you want local card images)
+      - ./frontend/dist:/opt/arkham/src/frontend/dist
