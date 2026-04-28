@@ -99,7 +99,7 @@ EOF
   exit 1
 }
 
-_file_size() { stat -c%s "$1" 2>/dev/null || stat -f%z "$1"; }
+_file_size() { stat -c%s "$1" 2>/dev/null || stat -f%z "$1" 2>/dev/null || wc -c < "$1" 2>/dev/null | tr -d ' \n'; }
 export -f _file_size
 
 # Called in parallel by xargs. Args: <expected_size> <key>
