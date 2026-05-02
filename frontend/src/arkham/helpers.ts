@@ -66,21 +66,16 @@ export function lowercase(word: string) {
 
 export const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" : ''
 
-export function isLocalized(src: string) {
+// Used by CardOverlay to decide whether to suppress the translated text panel.
+// English images already contain English text, so suppress.
+// For other languages, always show the overlay regardless of whether a
+// localized card image happens to exist — the text panel is shown beside the
+// image, not on top of it, so the redundancy is harmless and prevents the
+// "English image + no translation" failure mode when localized images are
+// listed in the digest but not actually deployed.
+export function isLocalized(_src: string) {
   const language = localStorage.getItem('language') || 'en'
-  // Always return true for English since all base images are English
-  if (language === 'en') return true
-
-  const helper = imgHelper.get(language) || defaultHelper
-  const path = src.replace(/^\//, '')
-  const exists = helper.digests.has(path)
-
-  if (exists && helper.root && helper.loaded.value) {
-    const canFetch = helper.data.get(path)?.value || false
-    if (canFetch) return true
-  }
-
-  return false
+  return language === 'en'
 }
 
 export function imgsrc(src: string) {
@@ -89,7 +84,7 @@ export function imgsrc(src: string) {
   const path = src.replace(/^\//, '')
   const fullPath = `${store.assetHost}/img/arkham/${path}`
 
-  if (isLocalized(src)) {
+  if (language !== 'en') {
     const helper = imgHelper.get(language) || defaultHelper
     const exists = helper.digests.has(path)
 

@@ -389,7 +389,7 @@ const isSpirit = computed<boolean>(() => {
 
 const cardCode = computed<string | null>(() => {
   if (!card.value) return null
-  const m = card.value.match(/cards\/(\d+)(_.*)?\.avif$/)
+  const m = card.value.match(/cards\/(\d+[ab]?)(_.*)?\.avif$/)
   return m ? m[1] : null
 })
 
@@ -812,12 +812,12 @@ watchEffect(() => {
   dbCardName.value = dbCardTypeName.value = dbCardFactionName.value = dbCardFactionCode.value = dbCardTraits.value = dbCardText.value = dbCardCustomizationText.value = dbCardFlavor.value = ''
   const src = card.value
   if (!src) return
-  const m = src.match(/(\d+b?)(_.*)?\.avif$/)
+  const m = src.match(/(\d+[ab]?)(_.*)?\.avif$/)
   if (!m) return
   const code = m[1]
   const tabooSuffix = m[2]
   const language = localStorage.getItem('language') || 'en'
-  if (imgsrc(`cards/${m[0]}`).includes(language)) return
+  if (language === 'en') return
 
   const dbCard = store.getDbCard(code)
   if (!dbCard) return
