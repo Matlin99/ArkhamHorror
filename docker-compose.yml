@@ -26,6 +26,14 @@ services:
       - ./setup.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
     secrets:
       - postgres_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arkham_pg_user -d arkham-horror-backend"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - arkham-net
   web:
     image: "halogenandtoast/arkham-horror:latest"
     build:
@@ -44,9 +52,13 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: unless-stopped
     volumes:
       - ./frontend/public/img:/opt/arkham/src/frontend/dist/img
+    networks:
+      - arkham-net
   fetch-images:
     profiles: ["fetch-images"]
     image: amazon/aws-cli
@@ -62,3 +74,9 @@ secrets:
   postgres_password:
     file: ./config/postgres_password.txt
  # redis-data:
+
+# Explicit named network prevents conflicts when multiple ArkhamHorror
+# deployments share a Docker host (e.g. fork name vs upstream)
+networks:
+  arkham-net:
+    name: arkham-net
