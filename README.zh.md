@@ -7,7 +7,26 @@
 
 ## 這個 fork 做了什麼
 
-### 1. 修復 Bug：全滅調查員後無法替換（#3469）
+### 1. 修復 Bug：40 張卡的技能檢定 race condition（2026-05-05）
+
+跟原作者版本相比，這個 fork 修正了一批會讓玩家覺得「卡牌效果好像沒生效」的 bug，根因是同一個訊息佇列 race condition。
+
+**戰鬥傷害沒正確結算：**
+- fight 通過後，武器上「依檢定結果造成額外傷害」的效果常常不生效，敵人只吃到 1 點基礎傷害
+- fight 失敗時，武器/事件「對自己造成傷害」的反噬效果也沒觸發
+- 受影響卡牌（fight 通過加傷）：Beretta M1918、Bonesaw、Brand of Cthugha、Butterfly Swords (5)、Cosmic Flame、Cyclopean Hammer (5)、.41 Derringer、Hand Hook、Ice Pick (3)、Katana、Kukri、Machete、Sledgehammer (3)、Switchblade、Trusty Bullwhip、Enchanted Blade Guardian (3) 等
+- 受影響卡牌（fight 失敗反噬）：Old Shotgun (2)、Sawed-Off Shotgun (5)、Shotgun (4)、Winchester Model 1912 (5)
+- 特殊事件 / 技能：Custom Modifications、Glassing、Marksmanship (1)、Brute Force (1)、Vicious Blow (2)、Broken Bottle、Baseball Bat (2)
+
+**調查時少拿線索：**
+- investigate 通過後，「依檢定結果或條件多拿 1 個線索」的效果有時候沒生效，只拿到地點原本提供的數量
+- 受影響卡牌：Chemistry Set、Mariner's Compass / (2)、Nautical Charts、Old Keyring (3)、Second Sight、Damning Testimony、Deduction (2)、Sharp Vision (1)
+
+**修正內容：** 把 result handler（`PassedSkillTest` / `FailedSkillTest` 等）裡的 `skillTestModifier` 用 `priority` 包起來，確保 `DamageDealt` / `DamageDealtToInvestigator` / `DiscoveredClues` 等 modifier 比後續的 `EnemyDamage` / `DiscoverClues` 訊息更早進佇列。涉及 40 個 .hs 檔案。
+
+完整變更紀錄請見 [`WINDOWS_DEPLOY.md` 的變更紀錄區](./WINDOWS_DEPLOY.md#變更紀錄)。
+
+### 2. 修復 Bug：全滅調查員後無法替換（#3469）
 
 當所有調查員都被擊敗時，後端會將他們移至 `killedInvestigators`，但前端仍在舊的 `game.investigators` 中查找，導致：
 - `UpgradeDeck.vue` 找不到玩家，無法顯示「替換調查員」介面
@@ -17,19 +36,31 @@
 - `UpgradeDeck.vue`：增加 `killedInvestigators` fallback 查找
 - 其餘三個元件：增加 `null` 檢查，找不到時直接回傳預設頭像路徑
 
-### 2. 修正圖片下載腳本（BusyBox 相容）
+### 3. 修正圖片下載腳本（BusyBox 相容）
 
 原作者的 `scripts/fetch-assets.sh` 使用 `stat` 取得檔案大小，但 Alpine / aws-cli 容器內的 BusyBox `stat` 不支援 `-c%s` 與 `-f%z` 參數，導致在 Docker 容器內執行下載時報錯。
 
 **修正內容：** 增加 `wc -c` 作為 fallback，確保在各種 Linux 環境都能正常執行。
 
-### 3. Windows x86_64 部署指南
+### 4. Windows x86_64 部署指南
 
 原作者的 `docker-compose.yml` 預設會觸發 Haskell 後端編譯，在 Windows 一般 PC 上可能需要 **2～6 小時**。
 
 **新增內容：**
 - `docker-compose.windows.yml`：覆寫設定，直接使用原作者編好的多架構 Docker 映像檔（`amd64`），只替換前端
-- `WINDOWS_DEPLOY.md`：完整步驟教學，包含「用 Docker 容器編譯前端，完全不用在 Windows 安裝 Node.js」
+- `WINDOWS_DEPLOY.md`：完整步驟教學，包含「用 Docker 容器編譯前端，完全不用在 Windows 安裝 Node.js」、更新流程、變更紀錄
+
+### 5. Dockerfile 編譯記憶體優化
+
+原作者的 `Dockerfile` 用 `stack build -j4`，記憶體較小的機器（Docker 配 8 GB 左右）編譯到 `Entity.Arkham.Step` 之類的 Template Haskell 重模組會 OOM。
+
+**修正內容：** 把 `-j4` 降為 `-j2`，並把同樣的 ghc-options 也傳給 `stack install`，讓低配機器也能順利從零 build。
+
+### 6. 繁體中文翻譯持續補上
+
+- 整套「Feast of Hemlock Vale」劇本繁中化
+- 持續補上其他卡牌翻譯（賽拉斯·馬什、銘刻於石、珍妮·巴恩斯…）
+- 前端遇到原文卡牌時自動疊上譯文 overlay
 
 ---
 
