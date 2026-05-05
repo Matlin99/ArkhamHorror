@@ -109,6 +109,92 @@ http://localhost:3000
 
 ---
 
+## 更新到新版
+
+### 純前端更新（卡片翻譯、UI 修正）
+
+只要重新跑步驟 3 編前端、重啟容器就好：
+
+```powershell
+cd ArkhamHorror
+git pull
+docker run --rm -v "${PWD}/frontend:/app" -w /app node:24.7.0-alpine sh -c "npm ci && npm run build"
+docker compose -f docker-compose.yml -f docker-compose.windows.yml restart web
+```
+
+### 後端更新（Haskell 程式碼修正）
+
+> **注意**：本指南預設用作者的 `halogenandtoast/arkham-horror:latest` 映像檔。
+> 如果新版改動了 Haskell 後端（例如 race condition 修正），單純 `git pull` 沒有用，
+> 必須換掉那個映像檔。下面三種方式擇一。
+
+#### 方式 A：從 Mac 把映像檔傳過來（推薦，一次性）
+
+在已經 build 好的 Mac 上：
+
+```bash
+cd ~/ArkhamHorror
+docker save halogenandtoast/arkham-horror:latest -o arkham-horror.tar
+# 檔案約 1.2 GB，傳到 Windows（USB / SMB / 雲端）
+```
+
+到 Windows：
+
+```powershell
+cd ArkhamHorror
+git pull
+docker load -i arkham-horror.tar
+docker run --rm -v "${PWD}/frontend:/app" -w /app node:24.7.0-alpine sh -c "npm ci && npm run build"
+docker compose -f docker-compose.yml -f docker-compose.windows.yml up -d
+```
+
+#### 方式 B：Windows 端從零 build（不需傳檔，但會編譯 2~6 小時）
+
+```powershell
+cd ArkhamHorror
+git pull
+docker compose build web
+docker compose -f docker-compose.yml -f docker-compose.windows.yml up -d
+```
+
+> Docker Desktop → Settings → Resources，記憶體至少給 **10 GB**，否則 `Entity.Arkham.Step` 那種 TH 重模組會 OOM。
+
+#### 方式 C：把自己的映像檔推到 Docker Hub / GHCR（適合常常更新）
+
+Mac 上 tag 並 push：
+
+```bash
+docker tag halogenandtoast/arkham-horror:latest YOUR_DOCKERHUB/arkham-horror:latest
+docker push YOUR_DOCKERHUB/arkham-horror:latest
+```
+
+把 `docker-compose.windows.yml` 裡的 `image:` 改成你的 tag，然後 Windows 端：
+
+```powershell
+docker compose pull web
+docker compose -f docker-compose.yml -f docker-compose.windows.yml up -d
+```
+
+### 資料庫不會被影響
+
+`docker compose up -d` 只 recreate `web` 容器，`db` 容器和它的 volume 都保留，遊戲存檔不會掉。
+
+---
+
+## 變更紀錄
+
+### 2026-05-05
+
+- **fix**：修正多張卡牌技能檢定結果處理的 race condition（`DamageDealt` / `DamageDealtToInvestigator` / `DiscoveredClues` modifier 來不及在 `EnemyDamage` / `DiscoverClues` 訊息前進佇列）。涉及 40 個檔案，包含：
+  - 武器類：Beretta M1918、Bonesaw、Brand of Cthugha、Butterfly Swords、Cosmic Flame、Cyclopean Hammer、.41 Derringer、Hand Hook、Ice Pick、Katana、Kukri、Machete、Old Shotgun、Sawed-Off Shotgun、Shotgun、Sledgehammer、Switchblade、Trusty Bullwhip、Winchester Model 1912 等
+  - 線索類：Chemistry Set、Mariner's Compass、Nautical Charts、Old Keyring、Second Sight、Damning Testimony、Deduction、Sharp Vision
+  - 事件/技能：Custom Modifications、Glassing、Marksmanship、Brute Force、Vicious Blow
+  - **此修正屬於後端 Haskell 變更**，請依「更新到新版 → 後端更新」的方式更新映像檔。
+- **fix(docker)**：把 `Dockerfile` 的 `stack build` 從 `-j4` 降為 `-j2`，記憶體較小的機器（Docker 配 8GB 左右）才不會 OOM。
+- **feat(zh)**：新增部分卡牌的繁體中文翻譯（賽拉斯·馬什、銘刻於石、珍妮·巴恩斯 等）。屬純前端，只要照「純前端更新」流程即可。
+
+---
+
 ## 常見問題
 
 ### Q：為什麼不直接 `docker compose up --build`？
