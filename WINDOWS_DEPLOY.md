@@ -185,13 +185,28 @@ docker compose -f docker-compose.yml -f docker-compose.windows.yml up -d
 
 ### 2026-05-05
 
-- **fix**：修正多張卡牌技能檢定結果處理的 race condition（`DamageDealt` / `DamageDealtToInvestigator` / `DiscoveredClues` modifier 來不及在 `EnemyDamage` / `DiscoverClues` 訊息前進佇列）。涉及 40 個檔案，包含：
-  - 武器類：Beretta M1918、Bonesaw、Brand of Cthugha、Butterfly Swords、Cosmic Flame、Cyclopean Hammer、.41 Derringer、Hand Hook、Ice Pick、Katana、Kukri、Machete、Old Shotgun、Sawed-Off Shotgun、Shotgun、Sledgehammer、Switchblade、Trusty Bullwhip、Winchester Model 1912 等
-  - 線索類：Chemistry Set、Mariner's Compass、Nautical Charts、Old Keyring、Second Sight、Damning Testimony、Deduction、Sharp Vision
-  - 事件/技能：Custom Modifications、Glassing、Marksmanship、Brute Force、Vicious Blow
-  - **此修正屬於後端 Haskell 變更**，請依「更新到新版 → 後端更新」的方式更新映像檔。
-- **fix(docker)**：把 `Dockerfile` 的 `stack build` 從 `-j4` 降為 `-j2`，記憶體較小的機器（Docker 配 8GB 左右）才不會 OOM。
-- **feat(zh)**：新增部分卡牌的繁體中文翻譯（賽拉斯·馬什、銘刻於石、珍妮·巴恩斯 等）。屬純前端，只要照「純前端更新」流程即可。
+#### 修了什麼 bug（玩家會碰到的症狀）
+
+**戰鬥傷害沒正確結算**：用武器發動 fight 檢定通過時，武器上「依檢定結果造成額外傷害」的效果常常不生效，敵人只吃到 1 點基礎傷害；或 fight 失敗時、武器/事件上「對自己造成傷害」的反噬效果也沒觸發。原因是傷害數值的 modifier 比 `EnemyDamage` 訊息晚進佇列，等套到敵人身上時傷害已經結算完了。
+
+受影響的卡：
+
+- **fight 通過後加傷**：Beretta M1918、Bonesaw、Brand of Cthugha (1)/(4)、Butterfly Swords (5)、Cosmic Flame、Cyclopean Hammer (5)、.41 Derringer / .41 Derringer (2)、Hand Hook、Ice Pick (3)、Katana、Kukri、Machete、Sledgehammer (3)、Switchblade / Switchblade (2)、Trusty Bullwhip / Trusty Bullwhip (Advanced)、Enchanted Blade (Guardian) (3)
+- **fight 失敗反噬自身**：Old Shotgun (2)、Sawed-Off Shotgun (5)、Shotgun (4)、Winchester Model 1912 (5)
+- **特殊事件 / 技能**：Custom Modifications、Glassing、Marksmanship (1)、Brute Force (1)、Vicious Blow (2)、Broken Bottle、Baseball Bat (2)
+
+**調查時少拿線索**：investigate 通過後，「依檢定結果或條件多拿 1 個線索」的效果有時候沒生效，只拿到地點原本提供的數量。
+
+受影響的卡：Chemistry Set、Mariner's Compass / (2)、Nautical Charts、Old Keyring (3)、Second Sight、Damning Testimony、Deduction (2)、Sharp Vision (1)
+
+> 上述 40 張卡都是同一個 race condition 的不同表現。修法是把 result handler 裡的 `skillTestModifier` 用 `priority` 包起來，確保 modifier 比後續的 `EnemyDamage` / `DiscoverClues` 訊息更早進佇列。
+>
+> **此修正屬於後端 Haskell 變更**，請依「更新到新版 → 後端更新」的方式更新映像檔，光 `git pull` 沒用。
+
+#### 其他更新
+
+- **fix(docker)**：把 `Dockerfile` 的 `stack build` 從 `-j4` 降為 `-j2`，記憶體較小的機器（Docker 配 8GB 左右）才不會在編譯 `Entity.Arkham.Step` 之類的 TH 重模組時 OOM。
+- **feat(zh)**：新增部分卡牌的繁體中文翻譯（賽拉斯·馬什、銘刻於石、珍妮·巴恩斯 等）。屬純前端，照「純前端更新」流程即可。
 
 ---
 
