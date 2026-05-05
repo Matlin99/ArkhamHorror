@@ -45,7 +45,7 @@ instance RunMessage EnchantedBladeGuardian3 where
         Nothing -> pure a
         Just sid -> do
           for_ attrs.controller \iid -> do
-            damageDealt <- skillTestModifier sid (toAbilitySource attrs 1) iid (DamageDealt 1)
+            damageDealt <- Priority <$> skillTestModifier sid (toAbilitySource attrs 1) iid (DamageDealt 1)
             pushAll [msg', damageDealt]
           pure . EnchantedBladeGuardian3 $ attrs `with` Metadata (Just sid)
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ | isJust (empowered meta) -> do

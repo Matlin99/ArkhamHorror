@@ -26,10 +26,10 @@ instance RunMessage OldShotgun2 where
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       withSkillTest \sid ->
-        skillTestModifier sid (attrs.ability 1) iid (DamageDealt $ max 1 $ min 3 n)
+        priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt $ max 1 $ min 3 n)
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       withSkillTest \sid ->
-        skillTestModifier sid (attrs.ability 1) iid (DamageDealtToInvestigator $ max 1 $ min 3 n)
+        priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealtToInvestigator $ max 1 $ min 3 n)
       pure a
     _ -> OldShotgun2 <$> liftRunMessage msg attrs

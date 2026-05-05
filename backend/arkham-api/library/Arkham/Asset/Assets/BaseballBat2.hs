@@ -35,7 +35,7 @@ instance RunMessage BaseballBat2 where
               chooseOneM iid do
                 labeled "Return baseball Bat to your hand after this attack" $ returnToHand iid attrs
                 labeled "This attack deals an additional +1 damage. Discard Baseball Bat after this attack" do
-                  skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+                  priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
                   toDiscardBy iid (attrs.ability 1) attrs
       pure a
     _ -> BaseballBat2 <$> liftRunMessage msg attrs

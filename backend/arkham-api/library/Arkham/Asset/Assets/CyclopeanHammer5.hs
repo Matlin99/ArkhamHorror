@@ -53,7 +53,7 @@ instance RunMessage CyclopeanHammer5 where
         else doStep 1 msg
       pure a
     DoStep 1 (PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n) -> do
-      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+      withSkillTest \sid -> priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       withSkillTestTargetedEnemy \enemy -> do
         when (n >= 3) do
           whenM (enemy <=~> NonEliteEnemy) do

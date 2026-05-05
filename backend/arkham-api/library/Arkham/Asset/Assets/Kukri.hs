@@ -34,7 +34,7 @@ instance RunMessage Kukri where
           chooseOneM iid do
             labeled "Spend 1 action to deal +1 damage" do
               loseActions iid (attrs.ability 1) 1
-              skillTestModifier sid attrs iid (DamageDealt 1)
+              priority $ skillTestModifier sid attrs iid (DamageDealt 1)
             labeled "Skip additional Kukri damage" nothing
       pure a
     _ -> Kukri <$> liftRunMessage msg attrs

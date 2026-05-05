@@ -113,7 +113,7 @@ instance RunMessage Marksmanship1Effect where
         target@(EnemyTarget eid) | effectTarget == target -> do
           engaged <- eid <=~> enemyEngagedWith iid
           unless engaged do
-            withSkillTest \sid -> pushM $ skillTestModifier sid attrs iid (DamageDealt 1)
+            withSkillTest \sid -> pushM $ Priority <$> skillTestModifier sid attrs iid (DamageDealt 1)
         _ -> pure ()
       pure e
     SkillTestEnds _ _ _ -> do

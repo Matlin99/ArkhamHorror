@@ -33,7 +33,7 @@ instance RunMessage ButterflySwords5 where
           let n = toResult @Int attrs.meta
           when ((n + 1 == 2) && not attrs.exhausted) do
             msgs <- capture $ withCost iid (exhaust attrs) $ do
-              skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+              priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
             chooseOne iid [Label "Do not exhaust" [], Label "Exhaust to do +1 damage" msgs]
 
           pure $ ButterflySwords5 $ setMeta @Int (n + 1) attrs

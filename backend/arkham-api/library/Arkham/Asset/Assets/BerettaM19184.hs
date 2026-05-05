@@ -28,7 +28,7 @@ instance RunMessage BerettaM19184 where
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       withSkillTest \sid -> do
-        additionalDamageDealt <- skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+        additionalDamageDealt <- Priority <$> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
         if n >= 4
           then pushAll [ready attrs, additionalDamageDealt]
           else do

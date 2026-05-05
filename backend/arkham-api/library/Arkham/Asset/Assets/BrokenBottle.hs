@@ -30,7 +30,7 @@ instance RunMessage BrokenBottle where
         chooseOneM iid do
           labeled "Discard to deal +1 damage" do
             toDiscardBy iid (attrs.ability 1) attrs
-            skillTestModifier sid (attrs.ability 1) iid $ DamageDealt 1
+            priority $ skillTestModifier sid (attrs.ability 1) iid $ DamageDealt 1
           withI18n skip_
       pure a
     _ -> BrokenBottle <$> liftRunMessage msg attrs

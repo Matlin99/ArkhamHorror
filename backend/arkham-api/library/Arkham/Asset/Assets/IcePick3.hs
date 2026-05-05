@@ -34,14 +34,14 @@ instance RunMessage IcePick3 where
           chooseOneM iid do
             labeled "Discard Ice Pick (3) to do +1 damage" do
               toDiscardBy iid (attrs.ability 1) attrs
-              skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+              priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
             labeled "Do not Discard" nothing
         when (action == #investigate) do
           withLocationOf iid \loc -> do
             chooseOneM iid do
               labeled "Discard Ice Pick (3) to discover 1 additional clue at your location" do
                 toDiscardBy iid (attrs.ability 1) attrs
-                skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt loc 1)
+                priority $ skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt loc 1)
               labeled "Do not Discard" nothing
       pure a
     _ -> IcePick3 <$> liftRunMessage msg attrs

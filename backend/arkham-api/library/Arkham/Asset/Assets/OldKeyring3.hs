@@ -33,7 +33,7 @@ instance RunMessage OldKeyring3 where
       whenJustM getSkillTestDifficulty \difficulty -> do
         when (difficulty == 0) $ do
           withSkillTest \sid ->
-            skillTestModifier sid (attrs.ability 1) iid $ DiscoveredClues 1
+            priority $ skillTestModifier sid (attrs.ability 1) iid $ DiscoveredClues 1
 
       pure a
     _ -> OldKeyring3 <$> liftRunMessage msg attrs

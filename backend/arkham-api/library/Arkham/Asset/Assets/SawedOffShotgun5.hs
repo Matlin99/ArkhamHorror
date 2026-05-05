@@ -27,10 +27,10 @@ instance RunMessage SawedOffShotgun5 where
       withSkillTest \sid -> do
         -- This has to be handled specially for cards like Oops!
         let val = max 1 (min 6 n)
-        pushM $ skillTestModifier sid (attrs.ability 1) iid (DamageDealtToInvestigator val)
+        pushM $ Priority <$> skillTestModifier sid (attrs.ability 1) iid (DamageDealtToInvestigator val)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       withSkillTest \sid -> do
-        pushM $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt $ max 1 (min 6 n))
+        pushM $ Priority <$> skillTestModifier sid (attrs.ability 1) iid (DamageDealt $ max 1 (min 6 n))
       pure a
     _ -> SawedOffShotgun5 <$> runMessage msg attrs

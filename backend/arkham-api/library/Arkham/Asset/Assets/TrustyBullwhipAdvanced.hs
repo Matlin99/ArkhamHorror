@@ -38,7 +38,7 @@ instance RunMessage TrustyBullwhipAdvanced where
               chooseOneM iid do
                 labeled "Deal + 1 damage for this attack and Automatically evade the enemy" do
                   exhaustThis attrs
-                  skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+                  priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
                   pushWhen canEvade $ EnemyEvaded iid eid
                 labeled "Do nothing" nothing
             _ -> error "TrustyBullwhipAdvanced: impossible"

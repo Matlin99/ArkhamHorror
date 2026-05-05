@@ -40,7 +40,7 @@ instance RunMessage Bonesaw where
         chooseOneM iid do
           labeled "Take 1 damage to do +1 damage" do
             assignDamage iid (attrs.ability 1) 1
-            skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+            priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
           labeled "Do not take damage" nothing
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

@@ -37,6 +37,6 @@ instance RunMessage MarinersCompass where
         blockingSkillTestOptionWithCriteria
           (exists $ InvestigatorWithId iid <> InvestigatorWithResources (EqualTo $ Static 0))
           "Mariner's Compass"
-          $ skillTestModifier sid attrs iid (DiscoveredClues 1)
+          $ priority $ skillTestModifier sid attrs iid (DiscoveredClues 1)
       pure a
     _ -> MarinersCompass <$> liftRunMessage msg attrs

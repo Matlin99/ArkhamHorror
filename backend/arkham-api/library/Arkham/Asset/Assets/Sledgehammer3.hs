@@ -38,7 +38,7 @@ instance RunMessage Sledgehammer3 where
         chooseOneM iid do
           labeled "Exhaust Sledgehammer" do
             exhaustThis attrs
-            skillTestModifier sid (attrs.ability 2) iid (DamageDealt 2)
+            priority $ skillTestModifier sid (attrs.ability 2) iid (DamageDealt 2)
           withI18n skip_
       pure a
     _ -> Sledgehammer3 <$> liftRunMessage msg attrs

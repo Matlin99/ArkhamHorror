@@ -24,6 +24,6 @@ instance RunMessage FortyOneDerringer where
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
-      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+      withSkillTest \sid -> priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure a
     _ -> FortyOneDerringer <$> liftRunMessage msg attrs

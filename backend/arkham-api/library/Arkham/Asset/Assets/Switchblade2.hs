@@ -25,6 +25,6 @@ instance RunMessage Switchblade2 where
       chooseFightEnemy sid iid source
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
-      withSkillTest \sid -> skillTestModifier sid attrs iid (DamageDealt 1)
+      withSkillTest \sid -> priority $ skillTestModifier sid attrs iid (DamageDealt 1)
       pure a
     _ -> Switchblade2 <$> liftRunMessage msg attrs

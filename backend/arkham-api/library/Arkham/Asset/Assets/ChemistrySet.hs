@@ -32,6 +32,6 @@ instance RunMessage ChemistrySet where
       when (n == 0) $ gainResourcesIfCan iid (attrs.ability 1) 2
       when (n == 2) $ drawCardsIfCan iid (attrs.ability 1) 1
       when (n == 4) $ withSkillTest \sid -> do
-        skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+        priority $ skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
       pure a
     _ -> ChemistrySet <$> liftRunMessage msg attrs

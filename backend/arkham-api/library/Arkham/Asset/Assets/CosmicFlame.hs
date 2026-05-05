@@ -40,7 +40,7 @@ instance RunMessage CosmicFlame where
           chooseOneM iid do
             labeled "Spend 1 charge to deal +1 damage" do
               removeTokens (attrs.ability 1) attrs Charge 1
-              skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+              priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
             withI18n skip_
       pure a
     _ -> CosmicFlame <$> liftRunMessage msg attrs

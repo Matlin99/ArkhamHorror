@@ -33,7 +33,7 @@ instance RunMessage Katana where
         withSkillTest \sid -> do
           chooseOneM iid do
             labeled "Exhaust Katana to deal +2 damage for this attack" do
-              skillTestModifier sid (attrs.ability 1) iid (DamageDealt 2)
+              priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 2)
               exhaustThis attrs
             labeled "Do not exhaust" nothing
       pure a

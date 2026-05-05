@@ -42,7 +42,7 @@ instance RunMessage TrustyBullwhip where
                 automaticallyEvadeEnemy iid eid
           countVar 1 $ labeled' "dealAdditionalDamage" do
             exhaustThis attrs
-            skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+            priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
           labeled' "skip" nothing
       pure a
     _ -> TrustyBullwhip <$> liftRunMessage msg attrs

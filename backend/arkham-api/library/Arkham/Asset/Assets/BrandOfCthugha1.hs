@@ -43,7 +43,7 @@ instance RunMessage BrandOfCthugha1 where
       pure a
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do
       withSkillTest \sid -> do
-        enabled <- skillTestModifier sid (attrs.ability 1) iid (DamageDealt n)
+        enabled <- Priority <$> skillTestModifier sid (attrs.ability 1) iid (DamageDealt n)
         pushAll
           [ enabled
           , SpendUses (attrs.ability 1) (toTarget attrs) Charge n

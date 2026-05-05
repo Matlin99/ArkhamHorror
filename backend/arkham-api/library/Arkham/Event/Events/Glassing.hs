@@ -41,7 +41,7 @@ instance RunMessage Glassing where
       priority $ chooseOneM iid do
         labeled "Discard Glassing to discover 1 additional clue" do
           toDiscardBy iid attrs attrs
-          withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+          withSkillTest \sid -> priority $ skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
         labeled "Do not discard" nothing
       pure e
     _ -> Glassing <$> liftRunMessage msg attrs

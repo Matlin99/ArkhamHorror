@@ -40,7 +40,7 @@ instance RunMessage SecondSight where
           chooseOneM iid do
             labeled "Spend 1 charge to discover 1 additional clue" do
               removeTokens (attrs.ability 1) attrs Charge 1
-              skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+              priority $ skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
             withI18n skip_
       pure a
     _ -> SecondSight <$> liftRunMessage msg attrs

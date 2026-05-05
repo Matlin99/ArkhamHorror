@@ -41,6 +41,6 @@ instance RunMessage HandHook where
             labeled "Do not discard card" nothing
             targets hand \card -> do
               discardCard iid (attrs.ability 1) card
-              skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+              priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure a
     _ -> HandHook <$> liftRunMessage msg attrs

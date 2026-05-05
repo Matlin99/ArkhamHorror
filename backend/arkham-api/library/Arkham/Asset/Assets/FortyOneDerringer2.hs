@@ -35,7 +35,7 @@ instance RunMessage FortyOneDerringer2 where
       getSkillTestId >>= \case
         Nothing -> pure a
         Just sid -> do
-          skillTestModifier sid attrs iid (DamageDealt 1)
+          priority $ skillTestModifier sid attrs iid (DamageDealt 1)
           if n >= 3 && not (gotExtraAction metadata)
             then do
               gainActions iid (attrs.ability 1) 1

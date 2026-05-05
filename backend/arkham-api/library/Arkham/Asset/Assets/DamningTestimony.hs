@@ -91,7 +91,7 @@ instance RunMessage DamningTestimony where
               guard $ not $ testBit n 0
               lid <- MaybeT $ field EnemyLocation eid
               guardM $ lift $ getCanDiscoverClues IsInvestigate iid lid
-              enabled <- Msg.skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt lid 1)
+              enabled <- Priority <$> Msg.skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt lid 1)
               pure
                 $ Label
                   "Spend 1 Evidence to discover 1 additional clue at the chosen enemy's location."

@@ -27,9 +27,9 @@ instance RunMessage Shotgun4 where
       withSkillTest \sid -> do
         let val = max 1 (min 5 n)
         -- sort of annoying but we need to handle oops here, but also the investigator damage
-        skillTestModifiers sid (attrs.ability 1) iid [DamageDealt 1, DamageDealtToInvestigator (val - 1)]
+        priority $ skillTestModifiers sid (attrs.ability 1) iid [DamageDealt 1, DamageDealtToInvestigator (val - 1)]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt $ max 1 (min 5 n))
+      withSkillTest \sid -> priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt $ max 1 (min 5 n))
       pure a
     _ -> Shotgun4 <$> liftRunMessage msg attrs

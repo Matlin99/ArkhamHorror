@@ -48,7 +48,7 @@ instance RunMessage Machete where
             labeled "Exhaust Machete" do
               exhaustThis attrs
               withSkillTest \sid ->
-                skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+                priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure a
     _ -> Machete <$> liftRunMessage msg attrs
 

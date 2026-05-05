@@ -130,6 +130,6 @@ instance RunMessage CustomModifications where
           && (n >= 3)
           && (attrs `hasCustomization` QuicksilverBullets) -> do
           whenM inAttackSkillTest do
-            withSkillTest \sid -> skillTestModifier sid (attrs.ability 3) iid (DamageDealt 1)
+            withSkillTest \sid -> priority $ skillTestModifier sid (attrs.ability 3) iid (DamageDealt 1)
           pure e
     _ -> CustomModifications <$> liftRunMessage msg attrs
