@@ -40,13 +40,8 @@ services:
       context: .
       args:
         - GHC_VERSION=9.12.2
-    # ASSET_HOST is auto-detected by web-entrypoint.sh:
-    #   unset (default): uses local images if present, CDN otherwise
-    # To override, uncomment one of the lines below:
-    # environment:
-    #   - ASSET_HOST=                                 # force local images
-    #   - ASSET_HOST=https://assets.arkhamhorror.app # force CDN
-    #   - REDIS_CONN=redis://redis:6379
+    environment:
+      - ASSET_HOST=https://assets.arkhamhorror.app
     secrets:
       - postgres_password
     ports:
@@ -57,6 +52,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./frontend/public/img:/opt/arkham/src/frontend/dist/img
+      - ./frontend/public/cards_zh.json:/opt/arkham/src/frontend/dist/cards_zh.json:ro
+      - ./frontend/public/cards_zh.json:/opt/arkham/src/frontend/dist/cards/cards_zh.json:ro
     networks:
       - arkham-net
   fetch-images:
