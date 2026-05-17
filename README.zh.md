@@ -62,6 +62,36 @@
 - 持續補上其他卡牌翻譯（賽拉斯·馬什、銘刻於石、珍妮·巴恩斯…）
 - 前端遇到原文卡牌時自動疊上譯文 overlay
 
+### 7. 新增 273 張卡 + 修正卡牌翻譯快取問題（2026-05-17）
+
+把 2026 Core Set 與 5 套新調查員擴充 starter deck 的卡牌一次補進中文卡庫。先前這些卡在遊戲中 hover 時右側根本不會出現中文翻譯框，因為 fork 的 `cards_zh.json` 是舊版 snapshot（5258 張），完全沒有新循環的條目。
+
+**這次補了什麼：**
+
+- 新增 273 張卡（5258 → **5531 張**），來源是 `zh.arkhamdb.com` API。涵蓋：
+  - Core Set (2026) — 104 張（含 Daniela Reyes / Joe Diamond / Trish Scarborough / Dexter Drake / Isabelle Barnes 等新調查員）
+  - André Patel / Carolyn Fern / Marie Lambeau / Miguel de la Cruz / Tommy Muldoon 5 套調查員 starter deck — 共 161 張
+  - Enthralling Encore + The Blob That Ate Everything ELSE!
+- 其中 30 張 ArkhamDB zh 已有完整翻譯（直接收編）；剩下 243 張在 ArkhamDB zh 也還是英文 placeholder，用 Claude Sonnet 帶 60 張對照詞表做 LLM 翻譯（name / text / traits / back_text）。少數 flavor 文字仍有中英混雜，但不影響遊戲規則。
+- 改 `docker-compose.yml`：把 `cards_zh.json` 用 `:ro` volume mount 進 web container，這樣 `docker compose up -d` 重建 container 時不會被 image 內舊檔覆蓋。同時把 `ASSET_HOST` 寫死成 CDN，避免 mount img 目錄後誤判為「本地有卡圖」。
+- 修 `frontend/src/stores/dbCards.ts`：`fetchDbCards()` 加 `cache: 'no-cache'`，否則瀏覽器 disk cache 會吃舊版 `cards_zh.json` 即使硬重整也沒用。
+
+**未來怎麼同步新翻譯：**
+
+ArkhamDB zh 社群有翻新卡時，跑這個就好：
+
+```bash
+# 1. 從 zh.arkhamdb.com 拉最新資料合進來（不覆蓋既有翻譯）
+python3 scripts/merge-zh-arkhamdb.py
+
+# 2. 找出哪些卡 ArkhamDB zh 仍是英文，切成批次餵 LLM
+python3 scripts/prep-translation.py
+
+# 3. 跑 LLM 翻譯（這步要手動把 /tmp/translate/all.json 餵 Sonnet/Codex），
+#    產出 /tmp/translate/all_zh.json 後執行：
+python3 scripts/apply-translations.py
+```
+
 ---
 
 ## 快速開始
